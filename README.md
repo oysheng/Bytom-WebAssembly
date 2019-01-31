@@ -3,7 +3,7 @@ It is a project for Bytom WebAssembly
 
 ## Prepare
 ```sh
-git clone https://github.com/Bytom-Community/Bytom-WebAssembly.git $GOPATH/src/github.com/bytom-community/wasm
+git clone https://github.com/oysheng/Bytom-WebAssembly.git $GOPATH/src/github.com/bytom-community/wasm
 ```
 
 ## Build
