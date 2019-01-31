@@ -1,7 +1,9 @@
 package standard
 
 import (
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"syscall/js"
 
@@ -164,4 +166,54 @@ func controlPrograms(progs ...*account.CtrlProgram) (map[string]string, error) {
 		res[account.ContractKeyHexString(hash)] = string(accountCP)
 	}
 	return res, nil
+}
+
+type PubKeyResp struct {
+	XPub        string   `json:"xpub"`
+	Pubkey      string   `json:"pubkey"`
+	DerivedPath []string `json:"derived_path"`
+}
+
+// CreatePubkey create pubkey
+func CreatePubkey(args []js.Value) {
+	defer lib.EndFunc(args[1]) //end func call
+	xpubStr := args[0].Get("xpub").String()
+	if lib.IsEmpty(xpubStr) || len(xpubStr) != 128 {
+		args[1].Set("error", fmt.Sprintf("invalid xpub:", xpubStr))
+		return
+	}
+
+	xpubByte, err := hex.DecodeString(xpubStr)
+	if err != nil {
+		args[1].Set("error", "decode xpub")
+		return
+	}
+	var xpub chainkd.XPub
+	copy(xpub[:], xpubByte)
+	pubkey := xpub.PublicKey()
+
+	seed := args[0].Get("seed").Int()
+	if seed <= 0 {
+		args[1].Set("error", "invalid seed with not positive integer")
+		return
+	}
+
+	derivedPath := []string{}
+	path := signers.Path(&signers.Signer{KeyIndex: uint64(1)}, signers.AccountKeySpace, uint64(seed))
+	for _, p := range path {
+		derivedPath = append(derivedPath, hex.EncodeToString(p))
+	}
+
+	res := PubKeyResp{
+		XPub:        xpubStr,
+		Pubkey:      hex.EncodeToString(pubkey),
+		DerivedPath: derivedPath,
+	}
+	rawPubkeyResp, err := json.Marshal(res)
+	if err != nil {
+		args[1].Set("error", err.Error())
+		return
+	}
+
+	args[1].Set("data", string(rawPubkeyResp))
 }

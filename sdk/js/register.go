@@ -24,6 +24,8 @@ func init() {
 	funcs["createAccountReceiver"] = standard.CreateAccountReceiver
 	funcs["signTransaction"] = standard.SignTransaction
 	funcs["signTransaction1"] = base.SignTransaction1
+	funcs["convertArgument"] = base.ConvertArgument
+	funcs["createPubkey"] = standard.CreatePubkey
 }
 
 //Register Register func

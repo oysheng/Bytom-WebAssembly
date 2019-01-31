@@ -2,7 +2,7 @@
 package pseudohsm
 
 import (
-	"github.com/bytom-community/mobile/sdk/errors"
+	"github.com/bytom-community/wasm/errors"
 )
 
 // pre-define errors for supporting bytom errorFormatter
