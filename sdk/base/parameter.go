@@ -2,12 +2,12 @@ package base
 
 import (
 	"encoding/json"
-	"github.com/bytom-community/wasm/errors"
 	"syscall/js"
 
 	"github.com/bytom-community/wasm/common"
 	"github.com/bytom-community/wasm/consensus"
 	chainjson "github.com/bytom-community/wasm/encoding/json"
+	"github.com/bytom-community/wasm/errors"
 	"github.com/bytom-community/wasm/protocol/vm"
 	"github.com/bytom-community/wasm/protocol/vm/vmutil"
 	"github.com/bytom-community/wasm/sdk/lib"
@@ -44,41 +44,53 @@ type AddressArgument struct {
 	Value string `json:"value"`
 }
 
-func ConvertContractArg(arg ContractArgument) (chainjson.HexBytes, error) {
-	resultData := chainjson.HexBytes{}
+func ConvertContractArg(arg ContractArgument) (*DataArgument, error) {
+	resultData := &DataArgument{}
 	switch arg.Type {
 	case "data":
 		data := &DataArgument{}
 		if err := json.Unmarshal(arg.RawData, data); err != nil {
 			return nil, err
 		}
-		resultData = data.Value
+		resultData.Value = data.Value
 
 	case "string":
 		data := &StrArgument{}
 		if err := json.Unmarshal(arg.RawData, data); err != nil {
 			return nil, err
 		}
-		resultData = []byte(data.Value)
+		resultData.Value = []byte(data.Value)
 
 	case "integer":
 		data := &IntegerArgument{}
 		if err := json.Unmarshal(arg.RawData, data); err != nil {
 			return nil, err
 		}
-		resultData = vm.Int64Bytes(data.Value)
+		resultData.Value = vm.Int64Bytes(data.Value)
 
 	case "boolean":
 		data := &BoolArgument{}
 		if err := json.Unmarshal(arg.RawData, data); err != nil {
 			return nil, err
 		}
-		resultData = vm.BoolBytes(data.Value)
+		resultData.Value = vm.BoolBytes(data.Value)
 
 	case "address":
 		data := &AddressArgument{}
 		if err := json.Unmarshal(arg.RawData, data); err != nil {
 			return nil, err
+		}
+
+		addressPrefix := data.Value[:2]
+		switch addressPrefix {
+		case consensus.MainNetParams.Bech32HRPSegwit:
+			consensus.ActiveNetParams = consensus.MainNetParams
+		case consensus.TestNetParams.Bech32HRPSegwit:
+			consensus.ActiveNetParams = consensus.TestNetParams
+		case consensus.SoloNetParams.Bech32HRPSegwit:
+			consensus.ActiveNetParams = consensus.SoloNetParams
+		default:
+			return nil, errors.New("bad address format")
 		}
 
 		address, err := common.DecodeAddress(data.Value, &consensus.ActiveNetParams)
@@ -96,7 +108,7 @@ func ConvertContractArg(arg ContractArgument) (chainjson.HexBytes, error) {
 		default:
 			return nil, errors.New("bad address type")
 		}
-		resultData = program
+		resultData.Value = program
 
 	default:
 		return nil, errors.New("bad argument type")
@@ -114,18 +126,29 @@ func ConvertArgument(args []js.Value) {
 		return
 	}
 
+	rawDataStr := args[0].Get("raw_data").String()
+	if lib.IsEmpty(typ) {
+		args[1].Set("error", "raw_data empty")
+		return
+	}
+
 	rawData := json.RawMessage{}
-	err := json.Unmarshal([]byte(args[0].Get("raw_data").String()), &rawData)
+	err := json.Unmarshal([]byte(rawDataStr), &rawData)
+	if err != nil {
+		args[1].Set("error", err.Error())
+		return
+	}
 
 	arg := ContractArgument{
 		Type:    typ,
 		RawData: rawData,
 	}
-
-	data, err := ConvertContractArg(arg)
+	dataArgument, err := ConvertContractArg(arg)
 	if err != nil {
 		args[1].Set("error", err.Error())
 		return
 	}
+
+	data, _ := json.Marshal(dataArgument)
 	args[1].Set("data", string(data))
 }

@@ -7,8 +7,6 @@ import (
 	"strings"
 	"syscall/js"
 
-	"github.com/bytom-community/wasm/sdk/lib"
-
 	"github.com/bytom-community/wasm/account"
 	"github.com/bytom-community/wasm/blockchain/signers"
 	"github.com/bytom-community/wasm/blockchain/txbuilder"
@@ -18,6 +16,7 @@ import (
 	"github.com/bytom-community/wasm/crypto/ed25519/chainkd"
 	"github.com/bytom-community/wasm/crypto/sha3pool"
 	"github.com/bytom-community/wasm/protocol/vm/vmutil"
+	"github.com/bytom-community/wasm/sdk/lib"
 )
 
 //CreateAccount create account
