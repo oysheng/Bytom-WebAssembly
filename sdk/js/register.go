@@ -22,8 +22,7 @@ func init() {
 	funcs["resetKeyPassword"] = base.ResetKeyPassword
 	funcs["createAccount"] = standard.CreateAccount
 	funcs["createAccountReceiver"] = standard.CreateAccountReceiver
-	funcs["signTransaction"] = standard.SignTransaction
-	funcs["signTransaction1"] = base.SignTransaction1
+	funcs["signTransaction"] = base.SignTransaction
 	funcs["convertArgument"] = base.ConvertArgument
 	funcs["createPubkey"] = standard.CreatePubkey
 }

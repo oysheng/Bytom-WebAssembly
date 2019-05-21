@@ -28,8 +28,8 @@ type RespSign struct {
 	Signatures  [][]string `json:"signatures"`
 }
 
-//SignTransaction1 sign server transaction
-func SignTransaction1(this js.Value, args []js.Value) interface{} {
+//SignTransaction sign server transaction
+func SignTransaction(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	transaction := args[0].Get("transaction").String()
 	password := args[0].Get("password").String()

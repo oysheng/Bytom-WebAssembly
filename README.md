@@ -23,7 +23,7 @@ GOOS=js GOARCH=wasm go build -tags=mini -o main.wasm
 ##### mini build
 >createKey\
 resetKeyPassword \
-signTransaction1
+signTransaction
 
 ##### default build
 >createKey \
@@ -31,5 +31,5 @@ resetKeyPassword \
 createAccount \
 createAccountReceiver \
 signTransaction \
-signTransaction1
+signTransaction
 

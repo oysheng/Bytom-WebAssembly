@@ -18,7 +18,7 @@ func init() {
 
 	funcs["createKey"] = base.CreateKey
 	funcs["resetKeyPassword"] = base.ResetKeyPassword
-	funcs["signTransaction1"] = base.SignTransaction1
+	funcs["signTransaction"] = base.SignTransaction
 }
 
 //Register Register func
