@@ -20,7 +20,7 @@ import (
 )
 
 //CreateAccount create account
-func CreateAccount(args []js.Value) {
+func CreateAccount(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	var (
 		alias     string
@@ -45,20 +45,21 @@ func CreateAccount(args []js.Value) {
 	id := signers.IDGenerate()
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 
 	acc := &account.Account{Signer: signer, ID: id, Alias: normalizedAlias}
 	rawAccount, err := json.Marshal(acc)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	args[1].Set("data", string(rawAccount))
+	return nil
 }
 
 //CreateAccountReceiver create address by account
-func CreateAccountReceiver(args []js.Value) {
+func CreateAccountReceiver(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	var (
 		acc       account.Account
@@ -71,7 +72,7 @@ func CreateAccountReceiver(args []js.Value) {
 
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	if len(acc.XPubs) == 1 {
 		cp, err = createP2PKH(&acc, false, nextIndex)
@@ -80,13 +81,13 @@ func CreateAccountReceiver(args []js.Value) {
 	}
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 
 	res, err := controlPrograms(cp)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	data, _ := json.Marshal(res)
 	args[1].Set("db", string(data)) //insert web IndexedDB
@@ -96,6 +97,7 @@ func CreateAccountReceiver(args []js.Value) {
 	}
 	txj, _ := json.Marshal(tx)
 	args[1].Set("data", string(txj))
+	return nil
 }
 
 func createP2PKH(acc *account.Account, change bool, nextIndex uint64) (*account.CtrlProgram, error) {
@@ -174,18 +176,18 @@ type PubKeyResp struct {
 }
 
 // CreatePubkey create pubkey
-func CreatePubkey(args []js.Value) {
+func CreatePubkey(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1]) //end func call
 	xpubStr := args[0].Get("xpub").String()
 	if lib.IsEmpty(xpubStr) || len(xpubStr) != 128 {
 		args[1].Set("error", fmt.Sprintf("invalid xpub:", xpubStr))
-		return
+		return nil
 	}
 
 	xpubByte, err := hex.DecodeString(xpubStr)
 	if err != nil {
 		args[1].Set("error", "decode xpub")
-		return
+		return nil
 	}
 	var xpub chainkd.XPub
 	copy(xpub[:], xpubByte)
@@ -194,7 +196,7 @@ func CreatePubkey(args []js.Value) {
 	seed := args[0].Get("seed").Int()
 	if seed <= 0 {
 		args[1].Set("error", "invalid seed with not positive integer")
-		return
+		return nil
 	}
 
 	derivedPath := []string{}
@@ -211,8 +213,9 @@ func CreatePubkey(args []js.Value) {
 	rawPubkeyResp, err := json.Marshal(res)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 
 	args[1].Set("data", string(rawPubkeyResp))
+	return nil
 }

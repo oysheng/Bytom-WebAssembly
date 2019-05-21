@@ -118,25 +118,25 @@ func ConvertContractArg(arg ContractArgument) (*DataArgument, error) {
 }
 
 // ConvertArgument convert arguments
-func ConvertArgument(args []js.Value) {
+func ConvertArgument(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1]) //end func call
 	typ := args[0].Get("type").String()
 	if lib.IsEmpty(typ) {
 		args[1].Set("error", "type empty")
-		return
+		return nil
 	}
 
 	rawDataStr := args[0].Get("raw_data").String()
 	if lib.IsEmpty(typ) {
 		args[1].Set("error", "raw_data empty")
-		return
+		return nil
 	}
 
 	rawData := json.RawMessage{}
 	err := json.Unmarshal([]byte(rawDataStr), &rawData)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 
 	arg := ContractArgument{
@@ -146,9 +146,10 @@ func ConvertArgument(args []js.Value) {
 	dataArgument, err := ConvertContractArg(arg)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 
 	data, _ := json.Marshal(dataArgument)
 	args[1].Set("data", string(data))
+	return nil
 }

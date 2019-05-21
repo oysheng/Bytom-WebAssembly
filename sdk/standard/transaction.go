@@ -42,36 +42,37 @@ func getSignFunc(keys map[string]string) txbuilder.SignFunc {
 }
 
 //SignTransaction sign transaction
-func SignTransaction(args []js.Value) {
+func SignTransaction(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	transaction := args[0].Get("transaction").String()
 	password := args[0].Get("password").String()
 	keys := args[0].Get("keys").String()
 	if lib.IsEmpty(transaction) || lib.IsEmpty(password) || lib.IsEmpty(keys) {
 		args[1].Set("error", "args empty")
-		return
+		return nil
 	}
 	var tx txbuilder.Template
 	err := json.Unmarshal([]byte(transaction), &tx)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	keysMap := make(map[string]string)
 	err = json.Unmarshal([]byte(keys), &keysMap)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	if err := txbuilder.Sign(nil, &tx, password, getSignFunc(keysMap)); err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	sr := signResp{Tx: &tx, SignComplete: txbuilder.SignProgress(&tx)}
 	resp, err := json.Marshal(sr)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	args[1].Set("data", string(resp))
+	return nil
 }

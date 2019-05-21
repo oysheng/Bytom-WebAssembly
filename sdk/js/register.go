@@ -11,7 +11,7 @@ import (
 )
 
 //RegisterFunc Register js func
-type RegisterFunc func(args []js.Value)
+type RegisterFunc func(this js.Value, args []js.Value) interface{}
 
 var funcs map[string]RegisterFunc
 
@@ -32,7 +32,7 @@ func init() {
 func Register() {
 	jsFuncVal := js.Global().Get("AllFunc")
 	for k, v := range funcs {
-		call := js.NewCallback(v)
+		call := js.FuncOf(v)
 		jsFuncVal.Set(k, call)
 	}
 	setPrintMessage := js.Global().Get("setFuncOver")

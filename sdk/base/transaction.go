@@ -29,20 +29,20 @@ type RespSign struct {
 }
 
 //SignTransaction1 sign server transaction
-func SignTransaction1(args []js.Value) {
+func SignTransaction1(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	transaction := args[0].Get("transaction").String()
 	password := args[0].Get("password").String()
 	keyJSON := args[0].Get("key").String()
 	if lib.IsEmpty(transaction) || lib.IsEmpty(password) || lib.IsEmpty(keyJSON) {
 		args[1].Set("error", "args empty")
-		return
+		return nil
 	}
 	var tx Template
 	err := json.Unmarshal([]byte(transaction), &tx)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	signRet := make([][]string, len(tx.SigningInstructions))
 	for k, v := range tx.SigningInstructions {
@@ -55,13 +55,13 @@ func SignTransaction1(args []js.Value) {
 			t, err := hex.DecodeString(d)
 			if err != nil {
 				args[1].Set("error", err.Error())
-				return
+				return nil
 			}
 			copy(h[:], t)
 			signData, err := signServer(keyJSON, path, h, password)
 			if err != nil {
 				args[1].Set("error", err.Error())
-				return
+				return nil
 			}
 			if signRet[k] == nil {
 				signRet[k] = make([]string, 0, len(v.SignData))
@@ -75,9 +75,10 @@ func SignTransaction1(args []js.Value) {
 	j, err := json.Marshal(ret)
 	if err != nil {
 		args[1].Set("error", err.Error())
-		return
+		return nil
 	}
 	args[1].Set("data", string(j))
+	return nil
 }
 
 func signServer(keyJSON string, path [][]byte, data [32]byte, password string) ([]byte, error) {
