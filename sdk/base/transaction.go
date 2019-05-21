@@ -13,7 +13,7 @@ import (
 
 const getKeyByXPub = "getKeyByXPub"
 
-//Template server build struct
+// Template is the transaction template
 type Template struct {
 	Transaction         string `json:"raw_transaction"`
 	SigningInstructions []struct {
@@ -22,13 +22,13 @@ type Template struct {
 	} `json:"signing_instructions"`
 }
 
-//RespSign result sign
+// RespSign is the response of sign transaction
 type RespSign struct {
 	Transaction string     `json:"raw_transaction"`
 	Signatures  [][]string `json:"signatures"`
 }
 
-//SignTransaction sign server transaction
+// SignTransaction sign transaction
 func SignTransaction(this js.Value, args []js.Value) interface{} {
 	defer lib.EndFunc(args[1])
 	transaction := args[0].Get("transaction").String()
@@ -58,7 +58,7 @@ func SignTransaction(this js.Value, args []js.Value) interface{} {
 				return nil
 			}
 			copy(h[:], t)
-			signData, err := signServer(keyJSON, path, h, password)
+			signData, err := SignData(keyJSON, path, h[:], password)
 			if err != nil {
 				args[1].Set("error", err.Error())
 				return nil
@@ -81,7 +81,8 @@ func SignTransaction(this js.Value, args []js.Value) interface{} {
 	return nil
 }
 
-func signServer(keyJSON string, path [][]byte, data [32]byte, password string) ([]byte, error) {
+//SignData return the result of sign
+func SignData(keyJSON string, path [][]byte, data []byte, password string) ([]byte, error) {
 	var (
 		err error
 		key *pseudohsm.XKey
