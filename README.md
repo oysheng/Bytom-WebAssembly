@@ -31,5 +31,6 @@ resetKeyPassword \
 createAccount \
 createAccountReceiver \
 signTransaction \
-signTransaction
-
+signMessage \
+convertArgument \
+createPubkey
