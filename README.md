@@ -338,8 +338,7 @@ sign message.
 
 `Object`:
 
-- `String` - *control_program*, control program.
-- `String` - *address*, address.
+- `String` - *signature*, the signature for message.
 
 ```js
 // Request
@@ -373,7 +372,7 @@ sign message.
 
 // Result
 {
-  "signature": "0d432e6f0e22da3168d76552273e60d23d432d61b4dac53e6769d39a1097f1cd1bd8e54c7d39eda334803e5c904bc2de2f27ff29748166e0334dcfded20e980b"
+  "signature": "b35da7083a1e099a116b813e2ac55be0060ea14497c235708cf6fff9ba77295ea6bf5be5131cb438debd44df71df29dbc5666a772c5bdbba39e8614b8cb46905"
 }
 ```
 
