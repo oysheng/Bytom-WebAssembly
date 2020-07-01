@@ -1,6 +1,8 @@
 package blockchain
 
 import (
+	"encoding/hex"
+
 	"github.com/bytom-community/wasm/vapor/common"
 	"github.com/bytom-community/wasm/vapor/consensus"
 	"github.com/bytom-community/wasm/vapor/consensus/segwit"
@@ -13,49 +15,58 @@ func BuildAnnotatedInput(tx *types.Tx, i int) *AnnotatedInput {
 	orig := tx.Inputs[i]
 	in := &AnnotatedInput{}
 	if orig.InputType() != types.CoinbaseInputType {
-		in.AssetID = orig.AssetID()
-		in.Amount = orig.Amount()
+		assetID := orig.AssetID()
+		in.AssetID = assetID.String()
+		in.Amount = int64(orig.Amount())
+		signData := tx.SigHash(uint32(i))
+		in.SignData = signData.String()
+		if vetoInput, ok := orig.TypedInput.(*types.VetoInput); ok {
+			in.Vote = hex.EncodeToString(vetoInput.Vote)
+		}
 	} else {
-		in.AssetID = *consensus.BTMAssetID
+		in.AssetID = consensus.BTMAssetID.String()
 	}
 
 	id := tx.Tx.InputIDs[i]
-	in.InputID = id
+	in.InputID = id.String()
 	e := tx.Entries[id]
 	switch e := e.(type) {
 	case *bc.VetoInput:
 		in.Type = "veto"
-		in.ControlProgram = orig.ControlProgram()
-		in.Address = getAddressFromControlProgram(in.ControlProgram, false)
-		in.SpentOutputID = e.SpentOutputId
+		controlProgram := orig.ControlProgram()
+		in.ControlProgram = hex.EncodeToString(controlProgram)
+		in.Address = getAddressFromControlProgram(controlProgram, false)
+		in.SpentOutputID = e.SpentOutputId.String()
 		arguments := orig.Arguments()
 		for _, arg := range arguments {
-			in.WitnessArguments = append(in.WitnessArguments, arg)
+			in.WitnessArguments = append(in.WitnessArguments, hex.EncodeToString(arg))
 		}
 
 	case *bc.CrossChainInput:
 		in.Type = "cross_chain_in"
-		in.ControlProgram = orig.ControlProgram()
-		in.Address = getAddressFromControlProgram(in.ControlProgram, true)
-		in.SpentOutputID = e.MainchainOutputId
+		controlProgram := orig.ControlProgram()
+		in.ControlProgram = hex.EncodeToString(controlProgram)
+		in.Address = getAddressFromControlProgram(controlProgram, true)
+		in.SpentOutputID = e.MainchainOutputId.String()
 		arguments := orig.Arguments()
 		for _, arg := range arguments {
-			in.WitnessArguments = append(in.WitnessArguments, arg)
+			in.WitnessArguments = append(in.WitnessArguments, hex.EncodeToString(arg))
 		}
 
 	case *bc.Spend:
 		in.Type = "spend"
-		in.ControlProgram = orig.ControlProgram()
-		in.Address = getAddressFromControlProgram(in.ControlProgram, false)
-		in.SpentOutputID = e.SpentOutputId
+		controlProgram := orig.ControlProgram()
+		in.ControlProgram = hex.EncodeToString(controlProgram)
+		in.Address = getAddressFromControlProgram(controlProgram, false)
+		in.SpentOutputID = e.SpentOutputId.String()
 		arguments := orig.Arguments()
 		for _, arg := range arguments {
-			in.WitnessArguments = append(in.WitnessArguments, arg)
+			in.WitnessArguments = append(in.WitnessArguments, hex.EncodeToString(arg))
 		}
 
 	case *bc.Coinbase:
 		in.Type = "coinbase"
-		in.Arbitrary = e.Arbitrary
+		in.Arbitrary = hex.EncodeToString(e.Arbitrary)
 	}
 	return in
 }
@@ -63,17 +74,17 @@ func BuildAnnotatedInput(tx *types.Tx, i int) *AnnotatedInput {
 // BuildAnnotatedOutput build the annotated output.
 func BuildAnnotatedOutput(tx *types.Tx, idx int) *AnnotatedOutput {
 	orig := tx.Outputs[idx]
-	outid := tx.OutputID(idx)
+	outputID := tx.OutputID(idx)
 	out := &AnnotatedOutput{
-		OutputID:       *outid,
+		OutputID:       outputID.String(),
 		Position:       idx,
-		AssetID:        *orig.AssetAmount().AssetId,
-		Amount:         orig.AssetAmount().Amount,
-		ControlProgram: orig.ControlProgram(),
+		AssetID:        orig.AssetAmount().AssetId.String(),
+		Amount:         int64(orig.AssetAmount().Amount),
+		ControlProgram: hex.EncodeToString(orig.ControlProgram()),
 	}
 
 	var isMainchainAddress bool
-	switch e := tx.Entries[*outid].(type) {
+	switch e := tx.Entries[*outputID].(type) {
 	case *bc.IntraChainOutput:
 		out.Type = "control"
 		isMainchainAddress = false
@@ -84,7 +95,7 @@ func BuildAnnotatedOutput(tx *types.Tx, idx int) *AnnotatedOutput {
 
 	case *bc.VoteOutput:
 		out.Type = "vote"
-		out.Vote = e.Vote
+		out.Vote = hex.EncodeToString(e.Vote)
 		isMainchainAddress = false
 	}
 

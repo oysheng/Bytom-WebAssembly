@@ -35,36 +35,31 @@ type AnnotatedRawTx struct {
 
 //AnnotatedInput means an annotated transaction input.
 type AnnotatedInput struct {
-	Type             string               `json:"type"`
-	AssetID          bc.AssetID           `json:"asset_id"`
-	AssetAlias       string               `json:"asset_alias,omitempty"`
-	AssetDefinition  *json.RawMessage     `json:"asset_definition,omitempty"`
-	Amount           uint64               `json:"amount"`
-	ControlProgram   chainjson.HexBytes   `json:"control_program,omitempty"`
-	Address          string               `json:"address,omitempty"`
-	SpentOutputID    *bc.Hash             `json:"spent_output_id,omitempty"`
-	AccountID        string               `json:"account_id,omitempty"`
-	AccountAlias     string               `json:"account_alias,omitempty"`
-	Arbitrary        chainjson.HexBytes   `json:"arbitrary,omitempty"`
-	InputID          bc.Hash              `json:"input_id"`
-	WitnessArguments []chainjson.HexBytes `json:"witness_arguments"`
+	Type             string   `json:"type"`
+	InputID          string   `json:"input_id"`
+	AssetID          string   `json:"asset"`
+	Amount           int64    `json:"amount"`
+	ControlProgram   string   `json:"script,omitempty"`
+	Address          string   `json:"address,omitempty"`
+	IssuanceProgram  string   `json:"issuance_program,omitempty"`
+	AssetDefinition  string   `json:"asset_definition,omitempty"`
+	SpentOutputID    string   `json:"spent_output_id,omitempty"`
+	Arbitrary        string   `json:"arbitrary,omitempty"`
+	WitnessArguments []string `json:"arguments,omitempty"`
+	Vote             string   `json:"vote,omitempty"`
+	SignData         string   `json:"sign_data,omitempty"`
 }
 
 //AnnotatedOutput means an annotated transaction output.
 type AnnotatedOutput struct {
-	Type            string             `json:"type"`
-	OutputID        bc.Hash            `json:"id"`
-	TransactionID   *bc.Hash           `json:"transaction_id,omitempty"`
-	Position        int                `json:"position"`
-	AssetID         bc.AssetID         `json:"asset_id"`
-	AssetAlias      string             `json:"asset_alias,omitempty"`
-	AssetDefinition *json.RawMessage   `json:"asset_definition,omitempty"`
-	Amount          uint64             `json:"amount"`
-	AccountID       string             `json:"account_id,omitempty"`
-	AccountAlias    string             `json:"account_alias,omitempty"`
-	ControlProgram  chainjson.HexBytes `json:"control_program"`
-	Address         string             `json:"address,omitempty"`
-	Vote            chainjson.HexBytes `json:"vote,omitempty"`
+	Type           string `json:"type"`
+	OutputID       string `json:"utxo_id"`
+	Position       int    `json:"position"`
+	AssetID        string `json:"asset"`
+	Amount         int64  `json:"amount"`
+	ControlProgram string `json:"script"`
+	Address        string `json:"address,omitempty"`
+	Vote           string `json:"vote,omitempty"`
 }
 
 //AnnotatedAccount means an annotated account.
