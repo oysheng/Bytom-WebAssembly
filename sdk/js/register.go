@@ -5,8 +5,6 @@ package js
 import (
 	"syscall/js"
 
-	"github.com/bytom-community/wasm/sdk/standard"
-
 	"github.com/bytom-community/wasm/sdk/base"
 )
 
@@ -18,15 +16,18 @@ var funcs map[string]RegisterFunc
 func init() {
 	funcs = make(map[string]RegisterFunc)
 
+	// bytom
 	funcs["createKey"] = base.CreateKey
 	funcs["resetKeyPassword"] = base.ResetKeyPassword
-	funcs["createAccount"] = standard.CreateAccount
-	funcs["createAccountReceiver"] = standard.CreateAccountReceiver
+	funcs["createAccount"] = base.CreateAccount
+	funcs["createAccountReceiver"] = base.CreateAccountReceiver
 	funcs["signTransaction"] = base.SignTransaction
 	funcs["signMessage"] = base.SignMessage
 	funcs["convertArgument"] = base.ConvertArgument
-	funcs["createPubkey"] = standard.CreatePubkey
-	//funcs["decodeVaporRawTx"] = base.DecodeVaporRawTx
+	funcs["createPubkey"] = base.CreatePubkey
+
+	// vapor
+	funcs["decodeVaporRawTx"] = base.DecodeVaporRawTx
 }
 
 //Register Register func
