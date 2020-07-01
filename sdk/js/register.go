@@ -6,6 +6,7 @@ import (
 	"syscall/js"
 
 	"github.com/bytom-community/wasm/sdk/base"
+	"github.com/bytom-community/wasm/sdk/side"
 )
 
 //RegisterFunc Register js func
@@ -27,7 +28,7 @@ func init() {
 	funcs["createPubkey"] = base.CreatePubkey
 
 	// vapor
-	funcs["decodeVaporRawTx"] = base.DecodeVaporRawTx
+	funcs["decodeVaporRawTx"] = side.DecodeVaporRawTx
 }
 
 //Register Register func

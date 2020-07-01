@@ -1,4 +1,4 @@
-package base
+package side
 
 import (
 	"encoding/json"
