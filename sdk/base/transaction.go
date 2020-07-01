@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"syscall/js"
 
+	"github.com/bytom-community/wasm/bytom/blockchain/pseudohsm"
+	chainjson "github.com/bytom-community/wasm/bytom/encoding/json"
 	"github.com/bytom-community/wasm/sdk/lib"
-
-	"github.com/bytom-community/wasm/blockchain/pseudohsm"
-	chainjson "github.com/bytom-community/wasm/encoding/json"
 )
 
 const getKeyByXPub = "getKeyByXPub"

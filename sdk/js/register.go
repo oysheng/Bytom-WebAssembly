@@ -26,6 +26,7 @@ func init() {
 	funcs["signMessage"] = base.SignMessage
 	funcs["convertArgument"] = base.ConvertArgument
 	funcs["createPubkey"] = standard.CreatePubkey
+	//funcs["decodeVaporRawTx"] = base.DecodeVaporRawTx
 }
 
 //Register Register func

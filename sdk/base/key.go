@@ -3,12 +3,11 @@ package base
 import (
 	"syscall/js"
 
-	"github.com/bytom-community/wasm/sdk/lib"
-
-	"github.com/bytom-community/wasm/blockchain/pseudohsm"
-
-	"github.com/bytom-community/wasm/crypto/ed25519/chainkd"
 	"github.com/pborman/uuid"
+
+	"github.com/bytom-community/wasm/bytom/blockchain/pseudohsm"
+	"github.com/bytom-community/wasm/bytom/crypto/ed25519/chainkd"
+	"github.com/bytom-community/wasm/sdk/lib"
 )
 
 // XKey struct type for keystore file

@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"syscall/js"
 
-	"github.com/bytom-community/wasm/common"
-	"github.com/bytom-community/wasm/consensus"
-	chainjson "github.com/bytom-community/wasm/encoding/json"
-	"github.com/bytom-community/wasm/errors"
-	"github.com/bytom-community/wasm/protocol/vm"
-	"github.com/bytom-community/wasm/protocol/vm/vmutil"
+	"github.com/bytom-community/wasm/bytom/common"
+	"github.com/bytom-community/wasm/bytom/consensus"
+	chainjson "github.com/bytom-community/wasm/bytom/encoding/json"
+	"github.com/bytom-community/wasm/bytom/errors"
+	"github.com/bytom-community/wasm/bytom/protocol/vm"
+	"github.com/bytom-community/wasm/bytom/protocol/vm/vmutil"
 	"github.com/bytom-community/wasm/sdk/lib"
 )
 
