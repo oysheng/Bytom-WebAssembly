@@ -12,7 +12,7 @@ import (
 
 // decodeVaporRawTx decode vapor raw transaction
 func decodeVaporRawTx(rawVaporTx string) (*blockchain.AnnotatedRawTx, error) {
-	var tx *types.Tx
+	tx := &types.Tx{}
 	if err := tx.UnmarshalText([]byte(rawVaporTx)); err != nil {
 		return nil, err
 	}
